@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b0c0f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Vira Rahesh - Company Profile</title>
+  <link rel="preload" href="assets/pages/page-01.webp" as="image" fetchpriority="high" />
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --panel: rgba(18, 19, 23, .82);
+      --line: rgba(255,255,255,.16);
+      --text: #f5f5f7;
+      --muted: rgba(255,255,255,.64);
+      --accent: #b78369;
+      --duration: 6000ms;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; overflow: hidden; }
+    body { overscroll-behavior: none; }
+    button, select { font: inherit; }
+
+    .app {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,255,255,.045), transparent 38%),
+        var(--bg);
+    }
+
+    .stage {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: max(12px, env(safe-area-inset-top)) 12px 10px;
+      user-select: none;
+      touch-action: none;
+      overflow: hidden;
+    }
+
+    .page-shell {
+      position: relative;
+      width: min(calc(100vw - 24px), calc((100vh - 96px) * 1.4142));
+      aspect-ratio: 841.89 / 595.276;
+      max-height: calc(100vh - 96px);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(0,0,0,.46), 0 2px 12px rgba(0,0,0,.3);
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #fff;
+      opacity: 0;
+      transform: translateY(0) scale(1);
+      transition: none;
+      -webkit-user-drag: none;
+      user-select: none;
+    }
+    .page.active { opacity: 1; z-index: 2; }
+    .page.in-forward { z-index: 3; animation: inForward .58s cubic-bezier(.22,.75,.18,1) both; }
+    .page.out-forward { z-index: 2; animation: outForward .58s cubic-bezier(.22,.75,.18,1) both; }
+    .page.in-back { z-index: 3; animation: inBack .58s cubic-bezier(.22,.75,.18,1) both; }
+    .page.out-back { z-index: 2; animation: outBack .58s cubic-bezier(.22,.75,.18,1) both; }
+    @keyframes inForward { from { opacity: 0; transform: translateY(11%) scale(.992); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes outForward { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(-9%) scale(.992); } }
+    @keyframes inBack { from { opacity: 0; transform: translateY(-11%) scale(.992); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes outBack { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(9%) scale(.992); } }
+
+    .top-chip {
+      position: absolute;
+      top: max(18px, env(safe-area-inset-top));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 7px 11px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 999px;
+      background: rgba(8,9,12,.56);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-size: 12px;
+      color: rgba(255,255,255,.72);
+      letter-spacing: .02em;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
+    .controls-wrap {
+      z-index: 20;
+      padding: 0 12px max(12px, env(safe-area-inset-bottom));
+    }
+    .controls {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      border: 1px solid rgba(255,255,255,.11);
+      border-radius: 18px;
+      background: var(--panel);
+      backdrop-filter: blur(18px) saturate(130%);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      box-shadow: 0 12px 36px rgba(0,0,0,.26);
+      padding: 10px 12px 9px;
+    }
+
+    .progress-track {
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.12);
+      overflow: hidden;
+      margin: 0 2px 8px;
+      cursor: pointer;
+    }
+    .progress-page {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), #e2b39b);
+      border-radius: inherit;
+      transform-origin: left center;
+    }
+
+    .control-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+    .left-group, .right-group, .center-group { display: flex; align-items: center; gap: 6px; }
+    .right-group { justify-content: flex-end; }
+    .center-group { justify-content: center; }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      display: inline-grid;
+      place-items: center;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      transition: background .18s ease, transform .12s ease;
+    }
+    .icon-btn:hover { background: rgba(255,255,255,.08); }
+    .icon-btn:active { transform: scale(.94); }
+    .icon-btn.primary { background: rgba(255,255,255,.11); }
+    .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
+
+    .page-count {
+      min-width: 72px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .page-count strong { color: var(--text); font-weight: 650; }
+
+    .speed {
+      border: 0;
+      background: rgba(255,255,255,.07);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 7px 8px;
+      outline: none;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .speed option { background: #17181d; color: #fff; }
+
+    .rotate-hint {
+      position: fixed;
+      left: 50%;
+      bottom: 92px;
+      transform: translateX(-50%) translateY(8px);
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      padding: 8px 11px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.11);
+      background: rgba(12,13,16,.78);
+      color: rgba(255,255,255,.76);
+      font-size: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: opacity .25s ease, transform .25s ease;
+    }
+    .rotate-hint.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .loading {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      background: #0b0c0f;
+      transition: opacity .4s ease, visibility .4s ease;
+    }
+    .loading.hidden { opacity: 0; visibility: hidden; }
+    .loader {
+      width: 34px; height: 34px;
+      border: 3px solid rgba(255,255,255,.14);
+      border-top-color: rgba(255,255,255,.86);
+      border-radius: 50%;
+      animation: spin .85s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .tap-zone { position: absolute; top: 0; bottom: 0; width: 18%; z-index: 8; cursor: pointer; }
+    .tap-zone.prev { left: 0; }
+    .tap-zone.next { right: 0; }
+
+    @media (max-width: 620px) {
+      .page-shell { width: calc(100vw - 12px); max-height: calc(100vh - 84px); }
+      .stage { padding-left: 6px; padding-right: 6px; }
+      .controls-wrap { padding-left: 7px; padding-right: 7px; padding-bottom: max(7px, env(safe-area-inset-bottom)); }
+      .controls { border-radius: 15px; padding: 8px 8px 7px; }
+      .icon-btn { width: 35px; height: 35px; border-radius: 10px; }
+      .speed { display: none; }
+      .page-count { min-width: 62px; font-size: 12px; }
+      .top-chip { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .page.in-forward, .page.out-forward, .page.in-back, .page.out-back { animation-duration: .01ms; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app" aria-label="Vira Rahesh catalog player">
+    <section class="stage" id="stage">
+      <div class="top-chip">Vira Rahesh Company Profile</div>
+      <div class="page-shell" id="pageShell">
+        <img class="page active" id="pageA" alt="Catalog page 1" draggable="false" />
+        <img class="page" id="pageB" alt="Catalog page" draggable="false" />
+      </div>
+      <div class="tap-zone prev" id="tapPrev" aria-hidden="true"></div>
+      <div class="tap-zone next" id="tapNext" aria-hidden="true"></div>
+      <div class="loading" id="loading"><div class="loader" aria-label="Loading"></div></div>
+    </section>
+
+    <div class="controls-wrap">
+      <div class="controls">
+        <div class="progress-track" id="progressTrack" title="Page progress">
+          <div class="progress-page" id="progressPage"></div>
+        </div>
+        <div class="control-row">
+          <div class="left-group">
+            <button class="icon-btn" id="prevBtn" aria-label="Previous page" title="Previous page">
+              <svg viewBox="0 0 24 24"><path d="M15.4 5.4 8.8 12l6.6 6.6-1.4 1.4L6 12l8-8z"/></svg>
+            </button>
+            <button class="icon-btn primary" id="playBtn" aria-label="Pause autoplay" title="Play / pause"></button>
+            <button class="icon-btn" id="nextBtn" aria-label="Next page" title="Next page">
+              <svg viewBox="0 0 24 24"><path d="m8.6 18.6 6.6-6.6-6.6-6.6L10 4l8 8-8 8z"/></svg>
+            </button>
+          </div>
+
+          <div class="center-group">
+            <div class="page-count"><strong id="currentPage">1</strong> / <span id="totalPages">75</span></div>
+          </div>
+
+          <div class="right-group">
+            <select class="speed" id="speed" aria-label="Autoplay speed" title="Autoplay speed">
+              <option value="4000">4s</option>
+              <option value="6000" selected>6s</option>
+              <option value="8000">8s</option>
+              <option value="10000">10s</option>
+            </select>
+            <button class="icon-btn" id="fullBtn" aria-label="Fullscreen" title="Fullscreen">
+              <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3Zm-2-4h2V7h3V5H5v5Zm12 7h-3v2h5v-5h-2v3Zm-3-12v2h3v3h2V5h-5Z"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="rotate-hint" id="rotateHint">Rotate your phone for a larger view</div>
+
+  <script>
+    (() => {
+      const TOTAL = 75;
+      const basePath = 'assets/pages/page-';
+      const fileFor = (n) => `${basePath}${String(n).padStart(2,'0')}.webp`;
+
+      const pageA = document.getElementById('pageA');
+      const pageB = document.getElementById('pageB');
+      const loading = document.getElementById('loading');
+      const currentPageEl = document.getElementById('currentPage');
+      const totalPagesEl = document.getElementById('totalPages');
+      const progressPage = document.getElementById('progressPage');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const playBtn = document.getElementById('playBtn');
+      const fullBtn = document.getElementById('fullBtn');
+      const speed = document.getElementById('speed');
+      const stage = document.getElementById('stage');
+      const tapPrev = document.getElementById('tapPrev');
+      const tapNext = document.getElementById('tapNext');
+      const rotateHint = document.getElementById('rotateHint');
+
+      totalPagesEl.textContent = TOTAL;
+
+      const params = new URLSearchParams(location.search);
+      let current = Math.min(TOTAL, Math.max(1, Number(params.get('page')) || 1));
+      let isPlaying = params.get('autoplay') !== '0';
+      let duration = Math.max(2500, Number(params.get('interval')) || 6000);
+      let active = pageA;
+      let idle = pageB;
+      let pageStartedAt = performance.now();
+      let pausedProgress = 0;
+      let animating = false;
+      let raf = 0;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      function iconPlay() {
+        return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+      }
+      function iconPause() {
+        return '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>';
+      }
+      function syncPlayButton() {
+        playBtn.innerHTML = isPlaying ? iconPause() : iconPlay();
+        playBtn.setAttribute('aria-label', isPlaying ? 'Pause autoplay' : 'Play autoplay');
+      }
+
+      function preload(n) {
+        if (n < 1 || n > TOTAL) return;
+        const img = new Image();
+        img.decoding = 'async';
+        img.src = fileFor(n);
+      }
+
+      function updateCounter() {
+        currentPageEl.textContent = current;
+      }
+
+      function resetPageClock(progress = 0) {
+        pausedProgress = progress;
+        pageStartedAt = performance.now() - (progress * duration);
+        progressPage.style.width = `${Math.min(100, progress * 100)}%`;
+      }
+
+      function goTo(target, direction = 1, userAction = false) {
+        if (animating) return;
+        if (target > TOTAL) target = 1;
+        if (target < 1) target = TOTAL;
+        if (target === current) return;
+
+        animating = true;
+        const incoming = idle;
+        const outgoing = active;
+        const inClass = direction >= 0 ? 'in-forward' : 'in-back';
+        const outClass = direction >= 0 ? 'out-forward' : 'out-back';
+
+        incoming.className = 'page';
+        outgoing.className = 'page active';
+        incoming.alt = `Catalog page ${target}`;
+        incoming.onload = () => {
+          incoming.onload = null;
+          incoming.classList.add(inClass);
+          outgoing.classList.add(outClass);
+
+          setTimeout(() => {
+            outgoing.className = 'page';
+            incoming.className = 'page active';
+            active = incoming;
+            idle = outgoing;
+            current = target;
+            updateCounter();
+            resetPageClock(0);
+            preload(current + 1 > TOTAL ? 1 : current + 1);
+            preload(current + 2 > TOTAL ? current + 2 - TOTAL : current + 2);
+            animating = false;
+            if (userAction && !isPlaying) progressPage.style.width = '0%';
+          }, 600);
+        };
+        incoming.onerror = () => {
+          incoming.onload = incoming.onerror = null;
+          animating = false;
+        };
+        incoming.src = fileFor(target);
+      }
+
+      function next(userAction = false) { goTo(current + 1, 1, userAction); }
+      function prev(userAction = false) { goTo(current - 1, -1, userAction); }
+
+      function togglePlay() {
+        if (isPlaying) {
+          const p = Math.min(1, Math.max(0, (performance.now() - pageStartedAt) / duration));
+          pausedProgress = p;
+          isPlaying = false;
+        } else {
+          isPlaying = true;
+          pageStartedAt = performance.now() - pausedProgress * duration;
+        }
+        syncPlayButton();
+      }
+
+      function tick(now) {
+        if (isPlaying && !animating) {
+          const p = Math.min(1, (now - pageStartedAt) / duration);
+          progressPage.style.width = `${p * 100}%`;
+          if (p >= 1) next(false);
+        }
+        raf = requestAnimationFrame(tick);
+      }
+
+      function setSpeed(ms) {
+        const oldDuration = duration;
+        const currentProgress = isPlaying
+          ? Math.min(1, (performance.now() - pageStartedAt) / oldDuration)
+          : pausedProgress;
+        duration = Number(ms);
+        pausedProgress = currentProgress;
+        pageStartedAt = performance.now() - currentProgress * duration;
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.();
+        } else {
+          document.exitFullscreen?.();
+        }
+      }
+
+      prevBtn.addEventListener('click', () => prev(true));
+      nextBtn.addEventListener('click', () => next(true));
+      playBtn.addEventListener('click', togglePlay);
+      fullBtn.addEventListener('click', toggleFullscreen);
+      speed.addEventListener('change', e => setSpeed(e.target.value));
+      tapPrev.addEventListener('click', () => prev(true));
+      tapNext.addEventListener('click', () => next(true));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); next(true); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); prev(true); }
+        if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+        if (e.key.toLowerCase() === 'f') toggleFullscreen();
+      });
+
+      stage.addEventListener('pointerdown', (e) => {
+        touchStartX = e.clientX;
+        touchStartY = e.clientY;
+      });
+      stage.addEventListener('pointerup', (e) => {
+        const dx = e.clientX - touchStartX;
+        const dy = e.clientY - touchStartY;
+        const ax = Math.abs(dx), ay = Math.abs(dy);
+        if (Math.max(ax, ay) < 35) return;
+        if (ax > ay) dx < 0 ? next(true) : prev(true);
+        else dy < 0 ? next(true) : prev(true);
+      });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isPlaying) {
+          const p = Math.min(1, Math.max(0, (performance.now() - pageStartedAt) / duration));
+          pausedProgress = p;
+        } else if (!document.hidden && isPlaying) {
+          pageStartedAt = performance.now() - pausedProgress * duration;
+        }
+      });
+
+      function maybeShowRotateHint() {
+        if (window.matchMedia('(orientation: portrait)').matches && innerWidth < 700) {
+          rotateHint.classList.add('show');
+          setTimeout(() => rotateHint.classList.remove('show'), 3200);
+        }
+      }
+
+      pageA.onload = () => {
+        pageA.onload = null;
+        loading.classList.add('hidden');
+        updateCounter();
+        resetPageClock(0);
+        preload(current + 1 > TOTAL ? 1 : current + 1);
+        preload(current + 2 > TOTAL ? current + 2 - TOTAL : current + 2);
+        maybeShowRotateHint();
+      };
+      pageA.src = fileFor(current);
+      syncPlayButton();
+      if ([4000,6000,8000,10000].includes(duration)) speed.value = String(duration);
+      raf = requestAnimationFrame(tick);
+    })();
+  </script>
+</body>
+</html>
